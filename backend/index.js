@@ -25,6 +25,7 @@ app.use("/user", require("./routes/user"));
 app.use("/exercise", require("./routes/exercise"));
 app.use("/workout", require("./routes/workout"));
 app.use("/workout_ex", require("./routes/exercise_workout"));
+app.use("/firebase", require("./routes/firebase"));
 
 app.use(express.static(buildDirectory));
 

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import localStorageUtils from "../../utils/localStorageUtils";
+import firebaseService from "../../utils/firebaseService";
 
 const NewExerciseModal = ({ isModalOpen, handleCloseModal, addExercise }) => {
   const [newExercise, setNewExercise] = useState({
@@ -12,53 +12,69 @@ const NewExerciseModal = ({ isModalOpen, handleCloseModal, addExercise }) => {
     reps: "",
     type: "",
     difficulty: "",
-    gif_url: "",
+    gif_file: null,
   });
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewExercise({ ...newExercise, [name]: value });
+    const { name, value, files } = e.target;
+    if (files) {
+      setNewExercise({ ...newExercise, gif_file: files[0] }); // handle file inputs
+    } else {
+      setNewExercise({ ...newExercise, [name]: value }); // handle other inputs
+    }
   };
 
   const handleSubmit = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3001/exercise/exercises",
-        newExercise,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorageUtils.getToken()}`,
-          },
+    if (newExercise.gif_file) {
+      console.log(newExercise.gif_file)
+      try {
+        const uploadResponse = await firebaseService.uploadGifUrl(newExercise.gif_file);
+        console.log("upload res",uploadResponse);
+        // if the upload is successful, submit the new exercise data with the returned URL
+        const exerciseData = {
+          ...newExercise,
+          gif_url: uploadResponse.name, 
+        };
+        // remove the gif_file from the data to be sent
+        delete exerciseData.gif_file;
+
+        const response = await axios.post(
+          "http://localhost:3001/exercise/exercises",
+          exerciseData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorageUtils.getToken()}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          toast.success("Exercise Added Successfully", {
+            position: "top-center",
+            autoClose: 2000,
+            onClose: () => {
+              handleCloseModal();
+              addExercise(response.data); // add the new exercise to the state
+            },
+          });
+          // reset the form state
+          setNewExercise({
+            name: "",
+            description: "",
+            sets: "",
+            reps: "",
+            type: "",
+            difficulty: "",
+            gif_file: null,
+          });
         }
-      );
-      console.log("here", response);
-      if (response.status === 200) {
-        //console.log("Exercise added:", response.data);
-        toast.success("Exercise Added Successfully", {
+      } catch (error) {
+        toast.error("Failed to Upload Exercise", {
           position: "top-center",
           autoClose: 2000,
-          onClose: () => {
-            handleCloseModal();
-            addExercise(newExercise);
-          },
         });
-        
-        setNewExercise({
-          name: "",
-          description: "",
-          sets: "",
-          reps: "",
-          type: "",
-          difficulty: "",
-          gif_url: "",
-        });
+        console.error("There was an error uploading the file:", error);
       }
-    } catch (error) {
-      toast.error("Failed to Add Exercise", {
-        position: "top-center",
-        autoClose: 2000,
-      });
-      console.error("There was an error submitting the form:", error);
     }
   };
 
@@ -163,10 +179,9 @@ const NewExerciseModal = ({ isModalOpen, handleCloseModal, addExercise }) => {
               <div className="form-group">
                 <label>Gif URL</label>
                 <input
-                  type="text"
+                  type="file"
                   className="form-control"
-                  name="gif_url"
-                  value={newExercise.gif_url}
+                  name="filename"
                   onChange={handleInputChange}
                 />
               </div>
