@@ -71,18 +71,14 @@ Before you begin, make sure you have the following installed:
 
 ### Setting Up Databse
 
-1. **MySQL Setup:**
-    - Create a new MySQL database for PulsePortal.
-
-2. **Database Configuration:**
+1. **Database Configuration:**
    - Update the database configuration in the database/config.js file with your database details.
 
-3. **Database Initialization:**
+2. **Database Initialization:**
    - Navigate to the MySQL Workbench and connect to your MySQL server.
    - Select Server > Data Import/Restore from the top menu.
    - In the Import Options, choose 'Import from Self-Contained File'.
    - Locate and select the `pulse_portal.sql` file you downloaded from the GitHub repository.
-   - If necessary, choose the schema you want to import into or create a new one by selecting 'New...' and providing a name for the schema.
    - Click 'Start Import' to begin the import process. Monitor the progress in the Import Progress tab.
    - After the import is complete, verify that all tables and objects are correctly imported into the database.
 
