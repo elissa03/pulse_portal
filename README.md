@@ -41,7 +41,7 @@ Before you begin, make sure you have the following installed:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/pulse-portal.git
+   git clone https://github.com/elissa03/pulse-portal.git
    ```
 2. **Navigate to project directory:**
     ```bash
