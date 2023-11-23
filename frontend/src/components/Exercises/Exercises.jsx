@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Nav from "../Nav/Nav";
 import ExerciseCard from "./ExerciseCard";
-import * as exerciseGifs from "../../utils/exercisegifs";
 import localStorageUtils from "../../utils/localStorageUtils";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus } from "react-icons/fa";
 import NewExerciseModal from "./NewExerciseModal";
+import firebaseService from "../../utils/firebaseService";
 
 function Exercises({ Toggle, isAdmin }) {
   const [exerciseData, setExerciseData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const convertToCamelCase = (str) => {
-    return str.replace(/-./g, (x) => x[1].toUpperCase());
-  };
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -28,20 +24,18 @@ function Exercises({ Toggle, isAdmin }) {
           }
         );
         if (response.status === 200) {
-          const exercisesWithGifPaths = response.data.map((exercise) => {
-            // Convert and find the correct import
-            const gifKey = convertToCamelCase(
-              exercise.gif_url.replace(".gif", "")
-            );
-            const gifUrl = exerciseGifs[gifKey];
-
+          const exercisesWithGifPaths = response.data.map(async (exercise) => {
+            // fetch the GIF URL from Firebase Storage
+            const gifUrl = await firebaseService.fetchGifUrl(exercise.gif_url);
             return {
               ...exercise,
-              gifUrl: gifUrl,
+              gifUrl: gifUrl, // use the fetched URL
             };
           });
-
-          setExerciseData(exercisesWithGifPaths);
+          // since we're now dealing with an array of promises, we need to resolve them
+          Promise.all(exercisesWithGifPaths).then((fetchedExercises) => {
+            setExerciseData(fetchedExercises);
+          });
         }
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -63,7 +57,7 @@ function Exercises({ Toggle, isAdmin }) {
     setExerciseData([...exerciseData, newExercise]);
   };
 
-  const deleteExercise = async(id) => {
+  const deleteExercise = async (id) => {
     try {
       const response = await axios.delete(
         `http://localhost:3001/exercise/exercises/${id}`,
@@ -86,7 +80,7 @@ function Exercises({ Toggle, isAdmin }) {
     } catch (error) {
       console.error("Error deleting exercise:", error);
     }
-  }
+  };
 
   return (
     <div className="container mt-4">
