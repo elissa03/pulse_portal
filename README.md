@@ -53,7 +53,7 @@ Before you begin, make sure you have the following installed:
     cd frontend
     ```
 
-4. **Install frontedn dependencies:**
+4. **Install frontend dependencies:**
     ```bash
     npm i 
     ```
