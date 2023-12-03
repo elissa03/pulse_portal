@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import localStorageUtils from "../../utils/localStorageUtils";
-import firebaseService from "../../utils/firebaseService";
+import firebaseService from "../../services/firebaseService";
+import exerciseService from "../../services/exerciseService";
 
 const NewExerciseModal = ({ isModalOpen, handleCloseModal, addExercise }) => {
   const [newExercise, setNewExercise] = useState({
@@ -37,17 +36,7 @@ const NewExerciseModal = ({ isModalOpen, handleCloseModal, addExercise }) => {
         };
         // remove the gif_file from the data to be sent
         delete exerciseData.gif_file;
-
-        const response = await axios.post(
-          "http://localhost:3001/exercise/exercises",
-          exerciseData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorageUtils.getToken()}`,
-            },
-          }
-        );
-
+        const response = await exerciseService.addExercise(exerciseData);
         if (response.status === 200) {
           toast.success("Exercise Added Successfully", {
             position: "top-center",
