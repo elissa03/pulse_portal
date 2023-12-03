@@ -3,8 +3,7 @@ import "./styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import localStorageUtils from "../../utils/localStorageUtils";
-import axios from "axios";
+import exerciseService from "../../services/exerciseService";
 
 function ExerciseCard({
   id,
@@ -42,19 +41,12 @@ function ExerciseCard({
 
   const editExercise = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:3001/exercise/exercises/${id}`,
-        {
-          description: editedDescription,
-          sets: editedSets,
-          reps: editedReps,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorageUtils.getToken()}`,
-          },
-        }
-      );
+
+      const response = await exerciseService.updateExercise(id, {
+        description: editedDescription,
+        sets: editedSets,
+        reps: editedReps,
+      });
 
       if (response.status === 200) {
         console.log("Exercise updated successfully", response);

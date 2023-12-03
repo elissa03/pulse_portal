@@ -2,10 +2,10 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./styles.module.css";
 import logo from "../../assets/logo.png";
-import axios from "axios";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import authService from "../../services/authService";
 
 
 const Signup = () => {
@@ -42,8 +42,7 @@ const Signup = () => {
         setError("Password must be at least 6 characters long.");
         return;
       }
-      const url = "http://localhost:3001/auth/register";
-      const response = await axios.post(url, {
+      const response = await authService.signup({
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,

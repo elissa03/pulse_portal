@@ -6,7 +6,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus } from "react-icons/fa";
 import NewExerciseModal from "./NewExerciseModal";
-import firebaseService from "../../utils/firebaseService";
+import firebaseService from "../../services/firebaseService";
+import exerciseService from "../../services/exerciseService";
 
 function Exercises({ Toggle, isAdmin }) {
   const [exerciseData, setExerciseData] = useState([]);
@@ -15,14 +16,7 @@ function Exercises({ Toggle, isAdmin }) {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3001/exercise/exercises",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorageUtils.getToken()}`,
-            },
-          }
-        );
+        const response = await exerciseService.getAllExercises();
         if (response.status === 200) {
           const exercisesWithGifPaths = response.data.map(async (exercise) => {
             // fetch the GIF URL from Firebase Storage
@@ -59,14 +53,7 @@ function Exercises({ Toggle, isAdmin }) {
 
   const deleteExercise = async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3001/exercise/exercises/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorageUtils.getToken()}`,
-          },
-        }
-      );
+      const response = await exerciseService.deleteExercise(id);
       if (response.status === 200) {
         // Remove the deleted exercise from the local state
         const updatedExercises = exerciseData.filter(

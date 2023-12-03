@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./styles.module.css";
 import logo from "../../assets/logo.png";
-import axios from "axios";
 import { useState } from "react";
 import localStorageUtils from "../../utils/localStorageUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import authService from "../../services/authService";
 
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -17,6 +17,7 @@ const LoginPage = ({ onLogin }) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleLogin = async () => {
+    console.log("login")
     setError("");
     try {
       // check if both fields are filled
@@ -31,11 +32,7 @@ const LoginPage = ({ onLogin }) => {
         return; // stop the function if validation fails
       }
 
-      const url = "http://localhost:3001/auth/login";
-      const response = await axios.post(url, {
-        email: email,
-        password: password,
-      });
+      const response = await authService.login(email, password);
       console.log("login res", response);
 
       if (response.status === 200) {
