@@ -1,14 +1,21 @@
 import axios from "axios";
+import localStorageUtils from "../utils/localStorageUtils";
 
 const fetchGifUrl = async (filename) => {
   try {
     const response = await axios.get(
-      `http://localhost:3001/firebase/gifs/${filename}`
+      `http://localhost:3001/firebase/gifs/${filename}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorageUtils.getToken()}`, 
+        },
+      }
     );
+    //console.log("hereee", response)
     return response.data.downloadURL;
   } catch (error) {
     console.error("Error fetching GIF URL:", error);
-    return ""; // Return a default or error image URL if necessary
+    return "";
   }
 };
 
@@ -19,7 +26,12 @@ const uploadGifUrl = async (file) => {
   try {
     const response = await axios.post(
       `http://localhost:3001/firebase/upload`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorageUtils.getToken()}`, 
+        },
+      }
     );
     return response.data;
   } catch (error) {
