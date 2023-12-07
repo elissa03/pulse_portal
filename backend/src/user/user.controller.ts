@@ -1,6 +1,7 @@
 import { Controller, Body, Res, Get, Param, Delete, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Response } from 'express';
+import { UpdateUserDto } from '../../dto/user.dto';
 
 /**
  * Service for managing user-related operations in the database.
@@ -33,7 +34,10 @@ export class UserController {
    * @throws Will throw an error if the user is not found or the query fails.
    */
   @Get('users/:id')
-  async getUserByIdController(@Param('id') id: number, @Res() res: Response): Promise<any> {
+  async getUserByIdController(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<any> {
     try {
       const user = await this.userService.getUserById(id);
       res.status(200).json(user);
@@ -51,7 +55,7 @@ export class UserController {
    * @throws Will throw an error if the deletion fails.
    */
   @Delete('users/:id')
-  async deleteUserController(@Param('id') id: number, @Res() res: Response) {
+  async deleteUserController(@Param('id') id: number, @Res() res: Response): Promise<any> {
     try {
       const success = await this.userService.deleteUser(id);
       if (success) {
@@ -67,9 +71,8 @@ export class UserController {
 
   /**
    * Updates an existing user in the database.
-   *
    * @param {number} id - The ID of the user to update.
-   * @param {any} body - The body of the request containing user data for the update.
+   * @param {any} updateUserDto - The body of the request containing user data for the update.
    * @param {Response} res - The response object.
    * @returns {Promise<any>} A promise that resolves to a boolean indicating the success of the update.
    * @throws Will throw an error if no valid fields are provided or the update fails.
@@ -78,18 +81,10 @@ export class UserController {
   async updateUserController(
     @Param('id') id: number,
     @Res() res: Response,
-    @Body() body,
-  ) {
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<any> {
     try {
-      const userId = id;
-      const userData = {
-        email: body.email,
-        first_name: body.first_name,
-        last_name: body.last_name,
-        password: body.password,
-        user_role: body.user_role,
-      };
-      const success = await this.userService.updateUser(userId, userData);
+      const success = await this.userService.updateUser(id, updateUserDto);
       if (success) {
         res.status(200).json({ message: 'User updated successfully' });
       } else {
@@ -97,11 +92,9 @@ export class UserController {
       }
     } catch (error) {
       console.error(error.message);
-      if (error.message === 'No valid fields provided to update') {
-        res.status(400).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Internal server error' });
-      }
+      res
+        .status(500)
+        .json({ message: 'Internal server error', error: error.message });
     }
   }
 }

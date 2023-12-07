@@ -10,6 +10,10 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ExWoService } from './ex_wo.service';
+import {
+  AddExerciseToWorkoutDto,
+  DeleteExerciseFromWorkoutDto,
+} from 'dto/ex_wo.dto';
 
 /**
  * Controller for managing the association between exercises and workouts.
@@ -51,13 +55,12 @@ export class ExWoController {
   @Delete(':workoutId/:exerciseId')
   async deleteExerciseFromWorkoutController(
     @Res() res: Response,
-    @Param('workoutId') workoutId: number,
-    @Param('exerciseId') exerciseId: number,
+    @Param() deleteExerciseFromWorkoutDto: DeleteExerciseFromWorkoutDto,
   ) {
     try {
       const success = await this.exwoService.deleteExerciseFromWorkout(
-        workoutId,
-        exerciseId,
+        deleteExerciseFromWorkoutDto.workoutId,
+        deleteExerciseFromWorkoutDto.exerciseId,
       );
       if (success) {
         res.status(200).json({ message: 'Exercise deleted successfully' });
@@ -78,14 +81,14 @@ export class ExWoController {
    * @returns A JSON response indicating success or failure of the operation.
    */
   @Post('/workouts/exercises')
-  async insertExerciseToWorkoutController(@Body() body, @Res() res: Response) {
+  async insertExerciseToWorkoutController(
+    @Body() addExerciseToWorkoutDto: AddExerciseToWorkoutDto,
+    @Res() res: Response,
+  ) {
     try {
-      const workoutId = body.workout_id;
-      const exerciseId = body.exercise_id;
-
       const success = await this.exwoService.insertExerciseToWorkout(
-        workoutId,
-        exerciseId,
+        addExerciseToWorkoutDto.workout_id,
+        addExerciseToWorkoutDto.exercise_id,
       );
 
       if (success) {
