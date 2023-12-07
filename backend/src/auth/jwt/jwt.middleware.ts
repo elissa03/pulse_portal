@@ -16,15 +16,17 @@ export class JwtMiddleware implements NestMiddleware {
    * @param {NextFunction} next - The next middleware function in the stack.
    * @throws {UnauthorizedException} If the token is not present or invalid.
    */
-  use(req: AuthenticatedRequest, next: NextFunction) {
+  use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) throw new UnauthorizedException();
+    if (!token) {
+      return next(new UnauthorizedException('No token provided'));
+    }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user: JwtPayload) => {
       if (err) {
         console.log(err);
-        throw new UnauthorizedException();
+        return next(new UnauthorizedException('Invalid token'));
       }
       req.user = user;
       next();

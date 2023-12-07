@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
 import { Response } from 'express';
+import { CreateExerciseDto, UpdateExerciseDto } from 'dto/exercise.dto';
 
 /**
  * Controller for managing exercise-related operations.
@@ -57,24 +58,18 @@ export class ExerciseController {
 
   /**
    * Handles the request to insert a new exercise.
-   *
-   * @param {any} body - The request body containing exercise data.
+   * @param {any} createExerciseDto - The request body containing exercise data.
    * @param {Response} res - The response object.
    * @returns The JSON response indicating the result of the insertion operation.
    */
   @Post('exercises')
-  async insertExerciseController(@Body() body, @Res() res: Response) {
+  async insertExerciseController(
+    @Body() createExerciseDto: CreateExerciseDto,
+    @Res() res: Response,
+  ) {
     try {
-      const exerciseData = {
-        name: body.name,
-        description: body.description,
-        sets: body.sets,
-        reps: body.reps,
-        type: body.type,
-        difficulty: body.difficulty,
-        gif_url: body.gif_url,
-      };
-      const success = await this.exerciseService.insertExercise(exerciseData);
+      const success =
+        await this.exerciseService.insertExercise(createExerciseDto);
       if (success) {
         res.status(200).json({ message: 'Exercise inserted successfully' });
       } else {
@@ -114,30 +109,21 @@ export class ExerciseController {
 
   /**
    * Handles the request to update an existing exercise.
-   *
    * @param {number} id - The ID of the exercise to update.
    * @param {Response} res - The response object.
-   * @param {any} body - The request body containing updated exercise data.
+   * @param {any} updateExerciseDto - The request body containing updated exercise data.
    * @returns The JSON response indicating the result of the update operation.
    */
   @Put('exercises/:id')
   async updateExerciseController(
     @Param('id') id: number,
     @Res() res: Response,
-    @Body() body,
+    @Body() updateExerciseDto: UpdateExerciseDto,
   ) {
     try {
-      const exerciseData = {
-        name: body.name,
-        description: body.description,
-        sets: body.sets,
-        reps: body.reps,
-        type: body.type,
-        difficulty: body.difficulty,
-      };
       const success = await this.exerciseService.updateExercise(
         id,
-        exerciseData,
+        updateExerciseDto,
       );
       if (success) {
         res.status(200).json({ message: 'Exercise updated successfully' });
