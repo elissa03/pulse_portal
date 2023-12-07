@@ -3,15 +3,26 @@ import { WorkoutService } from './workout.service';
 import { Response } from 'express';
 import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-request.interface';
 
+/**
+ * Controller for managing workout-related operations.
+ */
 @Controller('workout')
 export class WorkoutController {
   constructor(private workoutService: WorkoutService) {}
 
+  /**
+   * Inserts a new workout into the database.
+   *
+   * @param {AuthenticatedRequest} req - The authenticated request object containing the user's details.
+   * @param {Response} res - The Express response object.
+   * @param {any} body - The request body containing workout data.
+   * @returns A JSON response indicating the result of the insertion operation.
+   */
   @Post('workouts')
   async insertWorkoutController(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
-    @Body() body,
+    @Body() body: any,
   ) {
     try {
       const currentDate = new Date()
@@ -38,6 +49,13 @@ export class WorkoutController {
     }
   }
 
+  /**
+   * Deletes a workout from the database based on its ID.
+   *
+   * @param {number} id - The ID of the workout to delete.
+   * @param {Response} res - The Express response object.
+   * @returns A JSON response indicating the result of the deletion operation.
+   */
   @Delete('workouts/:id')
   async deleteWorkoutController(@Param('id') id: number, @Res() res: Response) {
     try {
@@ -53,6 +71,13 @@ export class WorkoutController {
     }
   }
 
+  /**
+   * Retrieves all workouts for the authenticated user.
+   *
+   * @param {AuthenticatedRequest} req - The authenticated request object containing the user's details.
+   * @param {Response} res - The Express response object.
+   * @returns A JSON response with the user's workouts.
+   */
   @Get('workouts')
   async getWorkoutsByUserController(
     @Req() req: AuthenticatedRequest,
@@ -66,6 +91,13 @@ export class WorkoutController {
     }
   }
 
+  /**
+   * Retrieves a specific workout by its ID.
+   *
+   * @param {number} id - The ID of the workout to retrieve.
+   * @param {Response} res - The Express response object.
+   * @returns A JSON response with the workout data.
+   */
   @Get('workouts/:id')
   async getWorkoutByIdController(
     @Param('id') id: number,
@@ -80,11 +112,19 @@ export class WorkoutController {
     }
   }
 
+  /**
+   * Updates an existing workout in the database.
+   *
+   * @param {number} id - The ID of the workout to update.
+   * @param {Response} res - The Express response object.
+   * @param {any} body - The request body containing updated workout data.
+   * @returns A JSON response indicating the result of the update operation.
+   */
   @Put('workouts/:id')
   async updateWorkoutController(
     @Param('id') id: number,
     @Res() res: Response,
-    @Body() body,
+    @Body() body: any,
   ) {
     try {
       const workout_id = id;

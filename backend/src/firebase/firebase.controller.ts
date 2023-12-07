@@ -12,10 +12,21 @@ import { Response } from 'express';
 import { FirebaseService } from './firebase.service';
 import { memoryStorage } from 'multer';
 
+/**
+ * Service for handling file uploads and retrievals with Firebase Storage.
+ */
 @Controller('firebase')
 export class FirebaseController {
   constructor(private readonly firebaseService: FirebaseService) {}
 
+  /**
+   * Uploads a file to Firebase Storage.
+   *
+   * @param {any} file - The file to be uploaded. Should contain properties like originalname and mimetype.
+   * @returns {Promise<any>} A promise that resolves to an object containing details about the uploaded file,
+   * including its download URL.
+   * @throws Will throw an error if the upload fails.
+   */
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('filename', {
@@ -34,6 +45,13 @@ export class FirebaseController {
     }
   }
 
+  /**
+   * Retrieves the download URL of a file stored in Firebase Storage.
+   *
+   * @param {string} filename - The name of the file in Firebase Storage.
+   * @returns {Promise<string>} A promise that resolves to the file's download URL.
+   * @throws Will throw an error if retrieving the URL fails.
+   */
   @Get(':type/:filename')
   async getFile(
     @Param('type') type: string,

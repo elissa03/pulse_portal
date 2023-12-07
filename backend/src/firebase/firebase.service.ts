@@ -8,6 +8,10 @@ import {
 } from 'firebase/storage';
 import { ConfigService } from '@nestjs/config';
 
+
+/**
+ * Service to handle operations with Firebase Storage.
+ */
 @Injectable()
 export class FirebaseService {
   private storage: any;
@@ -30,7 +34,14 @@ export class FirebaseService {
     this.storage = getStorage();
   }
 
-  async uploadFileToStorage(file): Promise<any> {
+  /**
+   * Uploads a file to Firebase Storage.
+   *
+   * @param {any} file - The file to be uploaded. Expected to have 'originalname' and 'mimetype' properties.
+   * @returns {Promise<any>} A promise that resolves to an object containing upload details.
+   * @throws Will throw an error if the file upload fails.
+   */
+  async uploadFileToStorage(file: any): Promise<any> {
     try {
       const storageRef = ref(this.storage, `gifs/${file.originalname}`);
 
@@ -57,7 +68,14 @@ export class FirebaseService {
     }
   }
 
-  async getFileDownloadURL(filename): Promise<string> {
+  /**
+   * Retrieves the download URL for a file stored in Firebase Storage.
+   *
+   * @param {string} filename - The name of the file in Firebase Storage.
+   * @returns {Promise<string>} A promise that resolves to the file's download URL.
+   * @throws Will throw an error if retrieving the URL fails.
+   */
+  async getFileDownloadURL(filename: any): Promise<string> {
     try {
       const storageRef = ref(this.storage, filename);
       return await getDownloadURL(storageRef);

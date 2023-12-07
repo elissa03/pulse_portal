@@ -12,6 +12,14 @@ import * as jwt from 'jsonwebtoken';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  /**
+   * Handles the login request and generates a JWT token upon successful authentication.
+   *
+   * @param body - The request body with `email` and `password`.
+   * @param res - The Express response object.
+   * @returns Responds with a status of 200 and a JWT token if successful,
+   *           otherwise responds with the appropriate status and error message.
+   */
   @Post('login')
   async login(@Body() body, @Res() res: Response) {
     try {
@@ -19,7 +27,7 @@ export class AuthController {
       if (result.status === 200) {
         const token = jwt.sign(
           { id: result.user[0].id },
-          process.env.JWT_SECRET
+          process.env.JWT_SECRET,
         );
         return res
           .status(200)
@@ -33,6 +41,15 @@ export class AuthController {
     }
   }
 
+  /**
+   * Handles user registration requests.
+   *
+   * @param body - The request body containing new user information,
+   *               including `first_name`, `last_name`, `email`, `password`, and `confirm_password`.
+   * @param res - The Express response object.
+   * @returns Responds with a status of 201 if the user is successfully registered,
+   *           otherwise responds with the appropriate status and error message.
+   */
   @Post('register')
   async register(@Body() body, @Res() res: Response) {
     try {

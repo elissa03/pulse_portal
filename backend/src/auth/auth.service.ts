@@ -6,6 +6,15 @@ import * as bcrypt from 'bcryptjs';
 export class AuthService {
   constructor(private databaseService: DatabaseService) {}
 
+  /**
+   * Authenticates a user by their email and password.
+   *
+   * @param {string} email - The email address of the user attempting to log in.
+   * @param {string} password - The plaintext password provided by the user.
+   * @returns {Promise<{status: number, message: string, user?: any}>} An object containing the status code,
+   *          message, and user information if authentication is successful. If authentication fails,
+   *          the user field is omitted.
+   */
   async login(email: string, password: string): Promise<any> {
     try {
       if (!email || !password) {
@@ -29,6 +38,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Registers a new user with the provided information.
+   *
+   * @param {any} data - An object containing the user's registration information.
+   *                     Expected to have first_name, last_name, email, password, and confirm_password fields.
+   * @returns {Promise<{status: number, message: string}>} An object containing the status code and message
+   *          indicating the result of the registration attempt.
+   */
   async register(data: any): Promise<any> {
     try {
       const { first_name, last_name, email, password, confirm_password } = data;

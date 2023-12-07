@@ -11,10 +11,19 @@ import {
 import { ExerciseService } from './exercise.service';
 import { Response } from 'express';
 
+/**
+ * Controller for managing exercise-related operations.
+ */
 @Controller('exercise')
 export class ExerciseController {
   constructor(private exerciseService: ExerciseService) {}
 
+  /**
+   * Handles the request to get all exercises.
+   *
+   * @param {Response} res - The response object.
+   * @returns The JSON response with all exercises.
+   */
   @Get('exercises')
   async getAllExercises(@Res() res: Response) {
     try {
@@ -25,6 +34,13 @@ export class ExerciseController {
     }
   }
 
+  /**
+   * Handles the request to get a specific exercise by ID.
+   *
+   * @param {number} id - The ID of the exercise.
+   * @param {Response} res - The response object.
+   * @returns The JSON response with the exercise data.
+   */
   @Get('exercises/:id')
   async getExercisesByIdController(
     @Param('id') id: number,
@@ -39,6 +55,13 @@ export class ExerciseController {
     }
   }
 
+  /**
+   * Handles the request to insert a new exercise.
+   *
+   * @param {any} body - The request body containing exercise data.
+   * @param {Response} res - The response object.
+   * @returns The JSON response indicating the result of the insertion operation.
+   */
   @Post('exercises')
   async insertExerciseController(@Body() body, @Res() res: Response) {
     try {
@@ -64,6 +87,13 @@ export class ExerciseController {
     }
   }
 
+  /**
+   * Handles the request to delete an exercise by ID.
+   *
+   * @param {number} id - The ID of the exercise to delete.
+   * @param {Response} res - The response object.
+   * @returns The JSON response indicating the result of the deletion operation.
+   */
   @Delete('exercises/:id')
   async deleteExerciseController(
     @Param('id') id: number,
@@ -82,6 +112,14 @@ export class ExerciseController {
     }
   }
 
+  /**
+   * Handles the request to update an existing exercise.
+   *
+   * @param {number} id - The ID of the exercise to update.
+   * @param {Response} res - The response object.
+   * @param {any} body - The request body containing updated exercise data.
+   * @returns The JSON response indicating the result of the update operation.
+   */
   @Put('exercises/:id')
   async updateExerciseController(
     @Param('id') id: number,

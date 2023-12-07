@@ -11,10 +11,20 @@ import {
 import { Response } from 'express';
 import { ExWoService } from './ex_wo.service';
 
+/**
+ * Controller for managing the association between exercises and workouts.
+ */
 @Controller('ex-wo')
 export class ExWoController {
   constructor(private exwoService: ExWoService) {}
 
+  /**
+   * Retrieves exercises associated with a specific workout ID.
+   *
+   * @param res - The Express response object.
+   * @param id - The ID of the workout.
+   * @returns A JSON response containing the exercises.
+   */
   @Get(':id')
   async getExercisesByWorkoutIdController(
     @Res() res: Response,
@@ -30,6 +40,14 @@ export class ExWoController {
     }
   }
 
+  /**
+   * Deletes an exercise from a specific workout.
+   *
+   * @param res - The Express response object.
+   * @param workoutId - The ID of the workout.
+   * @param exerciseId - The ID of the exercise to be deleted.
+   * @returns A JSON response indicating success or failure of the operation.
+   */
   @Delete(':workoutId/:exerciseId')
   async deleteExerciseFromWorkoutController(
     @Res() res: Response,
@@ -52,13 +70,23 @@ export class ExWoController {
     }
   }
 
+  /**
+   * Adds an exercise to a specific workout.
+   *
+   * @param body - The request body containing `workout_id` and `exercise_id`.
+   * @param res - The Express response object.
+   * @returns A JSON response indicating success or failure of the operation.
+   */
   @Post('/workouts/exercises')
   async insertExerciseToWorkoutController(@Body() body, @Res() res: Response) {
     try {
       const workoutId = body.workout_id;
       const exerciseId = body.exercise_id;
 
-      const success = await this.exwoService.insertExerciseToWorkout(workoutId, exerciseId);
+      const success = await this.exwoService.insertExerciseToWorkout(
+        workoutId,
+        exerciseId,
+      );
 
       if (success) {
         res
