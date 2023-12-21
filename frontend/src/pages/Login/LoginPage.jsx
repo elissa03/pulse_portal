@@ -7,14 +7,21 @@ import localStorageUtils from "../../utils/localStorageUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import authService from "../../services/authService";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaValidated, setCaptchaValidated] = useState(false);
   const navigate = useNavigate();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleCaptcha = (value) => {
+    setCaptchaValue(value);
+  };
 
   const handleLogin = async () => {
     console.log("login")
@@ -30,6 +37,11 @@ const LoginPage = ({ onLogin }) => {
       if (!emailRegex.test(email)) {
         setError("Please enter a valid email address.");
         return; // stop the function if validation fails
+      }
+
+      if (!captchaValue) {
+        setError("Please verify you are not a robot.");
+        return; // stop the function if CAPTCHA validation fails
       }
 
       const response = await authService.login(email, password);
@@ -93,6 +105,11 @@ const LoginPage = ({ onLogin }) => {
               className={styles.input}
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+            />
+            <ReCAPTCHA
+              sitekey="6Ldx4zgpAAAAAAKp1pJhbGUAday9dYb9gUGO0a5e"
+              onChange={handleCaptcha}
+              className={styles.recaptcha}
             />
             {error && <div className={styles.error_msg}>{error}</div>}
             <button
