@@ -11,7 +11,7 @@
 - **Core Functionalities**: Dashboard access, workout and nutrition tracking, personal goals monitoring.
 - **Exercise Database**: Create custom exercises, access a variety of educational resources.
 - **Feedback System**: Post and view feedback.
-
+- **OpenAI-Powered Virtual Assistant**: Engage with an intelligent assistant for personalized workout recommendations, fitness advice, and quick answers to fitness-related queries.
 #### For Admins:
 - **User Management**: View, manage, and delete user accounts.
 - **Content Management System**: Update exercise database, manage educational content and workout templates.

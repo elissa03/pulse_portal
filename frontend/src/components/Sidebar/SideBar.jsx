@@ -32,9 +32,12 @@ function SideBar({ showComponent, handleLogout, isAdmin }) {
           <i className="bi bi-calendar-check fs-5 me-3"></i>
           <span>Workouts</span>
         </a>
-        <a className="list-group-item py-2">
+        <a
+          className="list-group-item py-2"
+          onClick={() => showComponent("assistant")}
+        >
           <i className="bi bi-journal-bookmark fs-5 me-3"></i>
-          <span>Resources</span>
+          <span>Virtual Assistant</span>
         </a>
         {isAdmin && (
           <a
