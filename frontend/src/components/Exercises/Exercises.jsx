@@ -79,6 +79,7 @@ function Exercises({ Toggle, isAdmin }) {
               {...exercise}
               onDeleteClick={deleteExercise}
               exerciseData={exerciseData}
+              isAdmin={isAdmin}
             />
           </div>
         ))}

@@ -11,10 +11,18 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { FirebaseService } from './firebase.service';
 import { memoryStorage } from 'multer';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiParam,
+} from '@nestjs/swagger';
 
 /**
  * Service for handling file uploads and retrievals with Firebase Storage.
  */
+@ApiTags('Firebase Storage')
 @Controller('firebase')
 export class FirebaseController {
   constructor(private readonly firebaseService: FirebaseService) {}
@@ -33,6 +41,13 @@ export class FirebaseController {
       storage: memoryStorage(),
     }),
   )
+  @ApiOperation({
+    summary: 'Upload file',
+    description: 'Uploads a file to Firebase Storage.',
+  })
+  @ApiResponse({ status: 200, description: 'File uploaded successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiConsumes('multipart/form-data')
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
@@ -53,6 +68,23 @@ export class FirebaseController {
    * @throws Will throw an error if retrieving the URL fails.
    */
   @Get(':type/:filename')
+  @ApiOperation({
+    summary: 'Get file URL',
+    description:
+      'Retrieves the download URL of a file stored in Firebase Storage.',
+  })
+  @ApiResponse({ status: 200, description: 'File URL retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'File not found.' })
+  @ApiParam({
+    name: 'type',
+    type: 'string',
+    description: 'The type of the file (e.g., gifs).',
+  })
+  @ApiParam({
+    name: 'filename',
+    type: 'string',
+    description: 'The name of the file to retrieve.',
+  })
   async getFile(
     @Param('type') type: string,
     @Param('filename') filename: string,

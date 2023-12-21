@@ -21,12 +21,26 @@
 ### Tech Stack
 
 - **Frontend**: React.js, Bootstrap, CSS.
-- **Backend**: Node.js with Express.js.
+- **Backend**: NestJS a framework of NodeJS.
 - **Database**: MySQL (Native SQL).
 - **Authentication**: JWT.
 - **API Testing**: Postman.
+- **API Documentation**: Swagger.
 - **Storage**: Firebase.
 - **Version Control**: Git/GitHub.
+
+## API Documentation
+
+The API documentation for PulsePortal is available through Swagger. You can access the API documentation by following these steps:
+
+1. **Start the backend server**:
+   ```bash
+   cd backend
+   npm run dev
+   ```
+
+2. **Open your web browser and go to**:
+   https://localhost:3001/api
 
 
 ### Prerequisites
@@ -34,6 +48,10 @@
 Before you begin, make sure you have the following installed:
 
 - **Node.js:** Download and install Node.js from [nodejs.org](https://nodejs.org/).
+- **Nest.js:** Download and install Nest.js by running 
+    ```bash
+     npm i -g @nestjs/cli
+    ```
 - **MySQL:** Install MySQL on your system. You can download it from [mysql.com](https://www.mysql.com/).
 - **Git:** Ensure Git is installed. Download it from [git-scm.com](https://git-scm.com/).
 
@@ -69,7 +87,7 @@ Before you begin, make sure you have the following installed:
     ```
 
 
-### Setting Up Databse
+### Setting Up Database
 
 1. **Database Configuration:**
    - Update the database configuration in the database/config.js file with your database details.

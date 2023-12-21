@@ -7,20 +7,45 @@ import {
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody} from '@nestjs/swagger';
+import { CreateUserDto } from 'src/dto/user.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  /**
-   * Handles the login request and generates a JWT token upon successful authentication.
-   *
-   * @param body - The request body with `email` and `password`.
-   * @param res - The Express response object.
-   * @returns Responds with a status of 200 and a JWT token if successful,
-   *           otherwise responds with the appropriate status and error message.
-   */
   @Post('login')
+  @ApiOperation({
+    summary: 'Log in a user',
+    description: 'Validates user credentials and returns a JWT token',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful, JWT token returned',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized, invalid credentials',
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiBody({
+    description: 'Login Credentials',
+    type: 'object',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email', description: 'User email' },
+        password: {
+          type: 'string',
+          format: 'password',
+          description: 'User password',
+        },
+      },
+      required: ['email', 'password'],
+    },
+  })
   async login(@Body() body, @Res() res: Response) {
     try {
       const result = await this.authService.login(body.email, body.password);
@@ -41,16 +66,21 @@ export class AuthController {
     }
   }
 
-  /**
-   * Handles user registration requests.
-   *
-   * @param body - The request body containing new user information,
-   *               including `first_name`, `last_name`, `email`, `password`, and `confirm_password`.
-   * @param res - The Express response object.
-   * @returns Responds with a status of 201 if the user is successfully registered,
-   *           otherwise responds with the appropriate status and error message.
-   */
   @Post('register')
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Registers a new user and returns a success message',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Registration successful, user created',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request, invalid user data' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiBody({
+    type: CreateUserDto,
+    description: 'User data to register',
+  })
   async register(@Body() body, @Res() res: Response) {
     try {
       const result = await this.authService.register(body);

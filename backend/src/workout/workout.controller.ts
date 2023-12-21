@@ -1,24 +1,41 @@
-import { Controller, Body, Res, Get, Param, Delete, Put, Post, Req } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Res,
+  Get,
+  Param,
+  Delete,
+  Put,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 import { Response } from 'express';
 import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-request.interface';
-import { CreateWorkoutDto, UpdateWorkoutDto } from 'dto/workout.dto';
+import { CreateWorkoutDto, UpdateWorkoutDto } from 'src/dto/workout.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 
 /**
  * Controller for managing workout-related operations.
  */
+@ApiTags('Workouts')
 @Controller('workout')
 export class WorkoutController {
   constructor(private workoutService: WorkoutService) {}
 
-  /**
-   * Inserts a new workout into the database.
-   * @param {AuthenticatedRequest} req - The authenticated request object containing the user's details.
-   * @param {Response} res - The Express response object.
-   * @param {any} createWorkoutDto - The request body containing workout data.
-   * @returns A JSON response indicating the result of the insertion operation.
-   */
   @Post('workouts')
+  @ApiOperation({
+    summary: 'Create a workout',
+    description: 'Inserts a new workout for the authenticated user',
+  })
+  @ApiResponse({ status: 200, description: 'Workout inserted successfully' })
+  @ApiResponse({ status: 400, description: 'Workout could not be inserted' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiBody({
+    description: 'Workout Creation Data',
+    required: true,
+    type: CreateWorkoutDto,
+  })
   async insertWorkoutController(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
@@ -29,8 +46,12 @@ export class WorkoutController {
         .toISOString()
         .slice(0, 19)
         .replace('T', ' ');
-      
-      const workoutData = { ...createWorkoutDto, created_date: currentDate, user_id: req.user.id };
+
+      const workoutData = {
+        ...createWorkoutDto,
+        created_date: currentDate,
+        user_id: req.user.id,
+      };
       const success = await this.workoutService.insertWorkout(workoutData);
       if (success) {
         res.status(200).json({ message: 'Workout inserted successfully' });
@@ -44,14 +65,19 @@ export class WorkoutController {
     }
   }
 
-  /**
-   * Deletes a workout from the database based on its ID.
-   *
-   * @param {number} id - The ID of the workout to delete.
-   * @param {Response} res - The Express response object.
-   * @returns A JSON response indicating the result of the deletion operation.
-   */
   @Delete('workouts/:id')
+  @ApiOperation({
+    summary: 'Delete a workout',
+    description: 'Deletes a workout from the database based on its ID',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Exercise not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'The ID of the workout to delete',
+  })
   async deleteWorkoutController(@Param('id') id: number, @Res() res: Response) {
     try {
       const success = await this.workoutService.deleteWorkout(id);
@@ -66,14 +92,13 @@ export class WorkoutController {
     }
   }
 
-  /**
-   * Retrieves all workouts for the authenticated user.
-   *
-   * @param {AuthenticatedRequest} req - The authenticated request object containing the user's details.
-   * @param {Response} res - The Express response object.
-   * @returns A JSON response with the user's workouts.
-   */
   @Get('workouts')
+  @ApiOperation({
+    summary: 'Get workouts',
+    description: 'Retrieves all workouts for the authenticated user',
+  })
+  @ApiResponse({ status: 200, description: 'Workouts retrieved successfully' })
+  @ApiResponse({ status: 500, description: 'Internal Error' })
   async getWorkoutsByUserController(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
@@ -86,14 +111,18 @@ export class WorkoutController {
     }
   }
 
-  /**
-   * Retrieves a specific workout by its ID.
-   *
-   * @param {number} id - The ID of the workout to retrieve.
-   * @param {Response} res - The Express response object.
-   * @returns A JSON response with the workout data.
-   */
   @Get('workouts/:id')
+  @ApiOperation({
+    summary: 'Get a workout',
+    description: 'Retrieves a specific workout by its ID',
+  })
+  @ApiResponse({ status: 200, description: 'Workout retrieved successfully' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'The ID of workout to retrieve',
+  })
   async getWorkoutByIdController(
     @Param('id') id: number,
     @Res() res: Response,
@@ -107,15 +136,24 @@ export class WorkoutController {
     }
   }
 
-  /**
-   * Updates an existing workout in the database.
-   *
-   * @param {number} id - The ID of the workout to update.
-   * @param {Response} res - The Express response object.
-   * @param {any} body - The request body containing updated workout data.
-   * @returns A JSON response indicating the result of the update operation.
-   */
   @Put('workouts/:id')
+  @ApiOperation({
+    summary: 'Update a workout',
+    description: 'Updates an existing workout in the database',
+  })
+  @ApiResponse({ status: 200, description: 'Workout updated successfully' })
+  @ApiResponse({ status: 404, description: 'Workout not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiBody({
+    description: 'Workout Update Data',
+    required: true,
+    type: UpdateWorkoutDto, // Use the DTO class
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'The ID of workout to update',
+  })
   async updateWorkoutController(
     @Param('id') id: number,
     @Res() res: Response,
@@ -137,4 +175,3 @@ export class WorkoutController {
     }
   }
 }
-

@@ -1,0 +1,14 @@
+/* Center the modal overlay */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+/* Style for the modal content to control its size */
+.modal-content {
+  max-width: 500px; /* or any other size */
+  margin: auto; /* this will take effect if the modal is smaller than the viewport */
+  padding: 20px;
+}

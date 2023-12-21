@@ -10,22 +10,33 @@ import {
 } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
 import { Response } from 'express';
-import { CreateExerciseDto, UpdateExerciseDto } from 'dto/exercise.dto';
+import { CreateExerciseDto, UpdateExerciseDto } from 'src/dto/exercise.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 /**
  * Controller for managing exercise-related operations.
  */
+@ApiTags('Exercises')
 @Controller('exercise')
 export class ExerciseController {
   constructor(private exerciseService: ExerciseService) {}
 
-  /**
-   * Handles the request to get all exercises.
-   *
-   * @param {Response} res - The response object.
-   * @returns The JSON response with all exercises.
-   */
   @Get('exercises')
+  @ApiOperation({
+    summary: 'Get all exercises',
+    description: 'Retrieves all exercises from the database.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'All exercises retrieved successfully.',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Error' })
   async getAllExercises(@Res() res: Response) {
     try {
       const exercises = await this.exerciseService.getAllExercises();
@@ -35,14 +46,19 @@ export class ExerciseController {
     }
   }
 
-  /**
-   * Handles the request to get a specific exercise by ID.
-   *
-   * @param {number} id - The ID of the exercise.
-   * @param {Response} res - The response object.
-   * @returns The JSON response with the exercise data.
-   */
   @Get('exercises/:id')
+  @ApiOperation({
+    summary: 'Get exercise by ID',
+    description: 'Retrieves a specific exercise by their ID.',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Exercise not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID of the exercise to retrieve',
+  })
   async getExercisesByIdController(
     @Param('id') id: number,
     @Res() res: Response,
@@ -56,13 +72,18 @@ export class ExerciseController {
     }
   }
 
-  /**
-   * Handles the request to insert a new exercise.
-   * @param {any} createExerciseDto - The request body containing exercise data.
-   * @param {Response} res - The response object.
-   * @returns The JSON response indicating the result of the insertion operation.
-   */
   @Post('exercises')
+  @ApiOperation({
+    summary: 'Create exercise',
+    description: 'Inserts a new exercise into the database.',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise inserted successfully.' })
+  @ApiResponse({ status: 400, description: 'Exercise could not be inserted' })
+  @ApiResponse({ status: 500, description: 'An error occurred' })
+  @ApiBody({
+    type: CreateExerciseDto,
+    description: 'Exercise data for insertion.',
+  })
   async insertExerciseController(
     @Body() createExerciseDto: CreateExerciseDto,
     @Res() res: Response,
@@ -82,14 +103,19 @@ export class ExerciseController {
     }
   }
 
-  /**
-   * Handles the request to delete an exercise by ID.
-   *
-   * @param {number} id - The ID of the exercise to delete.
-   * @param {Response} res - The response object.
-   * @returns The JSON response indicating the result of the deletion operation.
-   */
   @Delete('exercises/:id')
+  @ApiOperation({
+    summary: 'Delete exercise',
+    description: 'Deletes an exercise by ID from the database.',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'Exercise not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID of the exercise to delete',
+  })
   async deleteExerciseController(
     @Param('id') id: number,
     @Res() res: Response,
@@ -107,14 +133,27 @@ export class ExerciseController {
     }
   }
 
-  /**
-   * Handles the request to update an existing exercise.
-   * @param {number} id - The ID of the exercise to update.
-   * @param {Response} res - The response object.
-   * @param {any} updateExerciseDto - The request body containing updated exercise data.
-   * @returns The JSON response indicating the result of the update operation.
-   */
   @Put('exercises/:id')
+  @ApiOperation({
+    summary: 'Update exercise',
+    description: 'Updates an existing exercise in the database.',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise updated successfully.' })
+  @ApiResponse({ status: 404, description: 'Exercise not found' })
+  @ApiResponse({
+    status: 400,
+    description: 'No valid fields provided to update',
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID of the exercise to update',
+  })
+  @ApiBody({
+    type: UpdateExerciseDto,
+    description: 'Exercise data for the update.',
+  })
   async updateExerciseController(
     @Param('id') id: number,
     @Res() res: Response,

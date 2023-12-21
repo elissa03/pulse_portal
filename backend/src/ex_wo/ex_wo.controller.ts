@@ -13,23 +13,33 @@ import { ExWoService } from './ex_wo.service';
 import {
   AddExerciseToWorkoutDto,
   DeleteExerciseFromWorkoutDto,
-} from 'dto/ex_wo.dto';
+} from 'src/dto/ex_wo.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
 /**
  * Controller for managing the association between exercises and workouts.
  */
+@ApiTags('Workout-Exercises')
 @Controller('ex-wo')
 export class ExWoController {
   constructor(private exwoService: ExWoService) {}
 
-  /**
-   * Retrieves exercises associated with a specific workout ID.
-   *
-   * @param res - The Express response object.
-   * @param id - The ID of the workout.
-   * @returns A JSON response containing the exercises.
-   */
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get all exercises in a workout',
+    description: 'Retrieves exercises associated with a specific workout ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'All exercises retrieved successfully.',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Error' })
   async getExercisesByWorkoutIdController(
     @Res() res: Response,
     @Param('id') id: number,
@@ -44,15 +54,24 @@ export class ExWoController {
     }
   }
 
-  /**
-   * Deletes an exercise from a specific workout.
-   *
-   * @param res - The Express response object.
-   * @param workoutId - The ID of the workout.
-   * @param exerciseId - The ID of the exercise to be deleted.
-   * @returns A JSON response indicating success or failure of the operation.
-   */
   @Delete(':workoutId/:exerciseId')
+  @ApiOperation({
+    summary: 'Delete exercise from workout',
+    description: 'Deletes an exercise from a specific workout.',
+  })
+  @ApiResponse({ status: 200, description: 'Exercise deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'Exercise not found' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiParam({
+    name: 'workoutId',
+    type: 'number',
+    description: 'ID of the workout',
+  })
+  @ApiParam({
+    name: 'exerciseId',
+    type: 'number',
+    description: 'ID of the exercise to delete',
+  })
   async deleteExerciseFromWorkoutController(
     @Res() res: Response,
     @Param() deleteExerciseFromWorkoutDto: DeleteExerciseFromWorkoutDto,
@@ -73,14 +92,18 @@ export class ExWoController {
     }
   }
 
-  /**
-   * Adds an exercise to a specific workout.
-   *
-   * @param body - The request body containing `workout_id` and `exercise_id`.
-   * @param res - The Express response object.
-   * @returns A JSON response indicating success or failure of the operation.
-   */
   @Post('/workouts/exercises')
+  @ApiOperation({
+    summary: 'Add exercise to workout',
+    description: ' Adds an exercise to a specific workout.',
+  })
+  @ApiResponse({ status: 201, description: 'Exercise inserted successfully.' })
+  @ApiResponse({ status: 400, description: 'Exercise could not be inserted' })
+  @ApiResponse({ status: 500, description: 'An error occurred' })
+  @ApiBody({
+    type: AddExerciseToWorkoutDto,
+    description: 'Exercise to add to a workout.',
+  })
   async insertExerciseToWorkoutController(
     @Body() addExerciseToWorkoutDto: AddExerciseToWorkoutDto,
     @Res() res: Response,

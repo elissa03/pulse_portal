@@ -1,4 +1,4 @@
-// src/auth/interfaces/authenticated-request.interface.ts
+// src/auth/interfaces/authenticated-request.interface.tsioov
 import { Request } from 'express';
 
 export interface JwtPayload {

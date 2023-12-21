@@ -1,22 +1,33 @@
 import { Controller, Body, Res, Get, Param, Delete, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Response } from 'express';
-import { UpdateUserDto } from '../../dto/user.dto';
+import { UpdateUserDto } from '../dto/user.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 
 /**
  * Service for managing user-related operations in the database.
  */
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  /**
-   * Retrieves all users from the database.
-   *
-   * @returns {Promise<any>} A promise that resolves to an array of user objects.
-   * @throws Will throw an error if the database query fails.
-   */
   @Get('users')
+  @ApiOperation({
+    summary: 'Get all users',
+    description: 'Retrieves all users from the database.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'All users retrieved successfully.',
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
   async getAllUsersController(@Res() res: Response): Promise<any> {
     try {
       const users = await this.userService.getAllUsers();
@@ -26,14 +37,19 @@ export class UserController {
     }
   }
 
-  /**
-   * Retrieves a specific user by their ID.
-   *
-   * @param {number} id - The ID of the user to retrieve.
-   * @returns {Promise<any>} A promise that resolves to the user object.
-   * @throws Will throw an error if the user is not found or the query fails.
-   */
   @Get('users/:id')
+  @ApiOperation({
+    summary: 'Get user by ID',
+    description: 'Retrieves a specific user by their ID from the database.',
+  })
+  @ApiResponse({ status: 200, description: 'User retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'The ID of the user to retrieve.',
+  })
   async getUserByIdController(
     @Param('id') id: number,
     @Res() res: Response,
@@ -47,15 +63,23 @@ export class UserController {
     }
   }
 
-  /**
-   * Deletes a user from the database based on their ID.
-   *
-   * @param {number} id - The ID of the user to delete.
-   * @returns {Promise<any>} A promise that resolves to a boolean indicating the success of the deletion.
-   * @throws Will throw an error if the deletion fails.
-   */
   @Delete('users/:id')
-  async deleteUserController(@Param('id') id: number, @Res() res: Response): Promise<any> {
+  @ApiOperation({
+    summary: 'Delete user',
+    description: 'Deletes a user from the database based on their ID.',
+  })
+  @ApiResponse({ status: 200, description: 'User deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'The ID of the user to delete.',
+  })
+  async deleteUserController(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<any> {
     try {
       const success = await this.userService.deleteUser(id);
       if (success) {
@@ -69,15 +93,14 @@ export class UserController {
     }
   }
 
-  /**
-   * Updates an existing user in the database.
-   * @param {number} id - The ID of the user to update.
-   * @param {any} updateUserDto - The body of the request containing user data for the update.
-   * @param {Response} res - The response object.
-   * @returns {Promise<any>} A promise that resolves to a boolean indicating the success of the update.
-   * @throws Will throw an error if no valid fields are provided or the update fails.
-   */
+  
   @Put('users/:id')
+  @ApiOperation({ summary: 'Update user', description: 'Updates an existing user in the database.' })
+  @ApiResponse({ status: 200, description: 'User updated successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @ApiParam({ name: 'id', type: 'number', description: 'The ID of the user to update.' })
+  @ApiBody({ type: UpdateUserDto, description: 'User data for the update.' })
   async updateUserController(
     @Param('id') id: number,
     @Res() res: Response,

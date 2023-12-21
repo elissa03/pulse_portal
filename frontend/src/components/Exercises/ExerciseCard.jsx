@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import "./styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import exerciseService from "../../services/exerciseService";
+import AddExerciseToWorkoutModal from "./AddExerciseToWorkoutModal";
 
 function ExerciseCard({
   id,
@@ -15,7 +16,8 @@ function ExerciseCard({
   type,
   difficulty,
   onDeleteClick,
-  exerciseData
+  exerciseData,
+  isAdmin,
 }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -23,7 +25,7 @@ function ExerciseCard({
     useState(initialDescription);
   const [editedSets, setEditedSets] = useState(initialSets);
   const [editedReps, setEditedReps] = useState(initialReps);
-
+  const [showAddToWorkoutModal, setShowAddToWorkoutModal] = useState(false);
 
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
@@ -41,7 +43,6 @@ function ExerciseCard({
 
   const editExercise = async () => {
     try {
-
       const response = await exerciseService.updateExercise(id, {
         description: editedDescription,
         sets: editedSets,
@@ -52,7 +53,7 @@ function ExerciseCard({
         console.log("Exercise updated successfully", response);
 
         // Update the local state with the edited exercise
-       exerciseData.map((exercise) => {
+        exerciseData.map((exercise) => {
           if (exercise.id === id) {
             return {
               ...exercise,
@@ -76,19 +77,21 @@ function ExerciseCard({
     toggleEditMode();
   };
 
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
+  };
 
+  const cancelEdit = () => {
+    // Reset edited values to initial values and exit edit mode
+    setEditedDescription(initialDescription);
+    setEditedSets(initialSets);
+    setEditedReps(initialReps);
+    toggleEditMode();
+  };
 
-   const toggleEditMode = () => {
-     setIsEditMode(!isEditMode);
-   };
-
-    const cancelEdit = () => {
-      // Reset edited values to initial values and exit edit mode
-      setEditedDescription(initialDescription);
-      setEditedSets(initialSets);
-      setEditedReps(initialReps);
-      toggleEditMode();
-    };
+  const handleAddExerciseClick = () => {
+    setShowAddToWorkoutModal(true);
+  };
 
   return (
     <div className={`card exercise-card difficulty-${difficulty}`}>
@@ -146,23 +149,46 @@ function ExerciseCard({
               <li className="list-group-item">Type: {type}</li>
               <li className="list-group-item">Difficulty: {difficulty}</li>
             </ul>
-            <div className="card-footer-buttons d-flex justify-content-center mt-3">
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={toggleEditMode}
-              >
-                <FaEdit />
-              </button>
-              <button
-                className="btn btn-danger btn-sm ml-2"
-                onClick={openDeleteModal}
-              >
-                <FaTrash />
-              </button>
-            </div>
+            {isAdmin ? (
+              // If user is an admin, show edit and delete buttons
+              <div className="card-footer-buttons d-flex justify-content-center mt-3">
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={toggleEditMode}
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  className="btn btn-danger btn-sm ml-2"
+                  onClick={openDeleteModal}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ) : (
+              // If user is not an admin, show "+" button
+              <div className="card-footer-buttons d-flex justify-content-center mt-3">
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={handleAddExerciseClick}
+                >
+                  <FaPlus /> {/* Display the plus icon */}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Add Exercise to Workout Modal */}
+      {showAddToWorkoutModal && (
+        <AddExerciseToWorkoutModal
+          isOpen={showAddToWorkoutModal}
+          onClose={() => setShowAddToWorkoutModal(false)}
+          exerciseId={id}
+          exerciseName={name}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
