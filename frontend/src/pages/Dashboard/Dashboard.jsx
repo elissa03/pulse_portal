@@ -6,6 +6,7 @@ import Home from "../../components/Home/Home";
 import Exercises from "../../components/Exercises/Exercises";
 import Workouts from "../../components/Workouts/Workouts";
 import Users from "../../components/Users/Users";
+import Assistant from "../../components/Assistant/Assistant";
 
 function Dashboard({ isAdmin, handleLogout }) {
     const [toggle, setToggle] = useState(true);
@@ -39,6 +40,7 @@ function Dashboard({ isAdmin, handleLogout }) {
           )}
           {activeComponent === "workouts" && <Workouts Toggle={Toggle} />}
           {activeComponent === "users" && <Users Toggle={Toggle} />}
+          {activeComponent === "assistant" && <Assistant Toggle={Toggle}/>}
         </div>
       </div>
     </div>
